@@ -10,25 +10,48 @@ package com.sinlimites.androidcameraapp;
 public final class R {
     public static final class attr {
     }
+    public static final class color {
+        public static final int dark_yellow=0x7f040000;
+    }
     public static final class drawable {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int camera_view=0x7f060002;
-        public static final int start_button=0x7f060001;
-        public static final int stop_button=0x7f060000;
+        public static final int binarized_imageview=0x7f080003;
+        public static final int binarized_imageview_background=0x7f080002;
+        public static final int camera_view=0x7f080000;
+        public static final int loading_type=0x7f080006;
+        public static final int loading_type_header=0x7f080001;
+        public static final int start_button=0x7f080005;
+        public static final int stop_button=0x7f080004;
+        public static final int transit=0x7f080007;
+        public static final int unload=0x7f080008;
     }
     public static final class layout {
         public static final int main_activity=0x7f030000;
     }
+    public static final class menu {
+        public static final int main_menu=0x7f070000;
+    }
     public static final class string {
-        public static final int app_name=0x7f040000;
-        public static final int service_already_started=0x7f040006;
-        public static final int service_already_stopped=0x7f040005;
-        public static final int service_started=0x7f040003;
-        public static final int service_stopped=0x7f040004;
-        public static final int start_service=0x7f040001;
-        public static final int stop_service=0x7f040002;
+        public static final int app_name=0x7f050000;
+        /**  Content Description 
+         */
+        public static final int binarized_image=0x7f05000b;
+        /**  Menu strings 
+         */
+        public static final int loading_type_header=0x7f050008;
+        public static final int no_loading_type=0x7f050007;
+        public static final int service_already_started=0x7f050006;
+        public static final int service_already_stopped=0x7f050005;
+        /**  Toast Messages 
+         */
+        public static final int service_started=0x7f050003;
+        public static final int service_stopped=0x7f050004;
+        public static final int start_service=0x7f050001;
+        public static final int stop_service=0x7f050002;
+        public static final int transit=0x7f050009;
+        public static final int unload=0x7f05000a;
     }
     public static final class style {
         /** 
@@ -52,10 +75,10 @@ public final class R {
     
  API 14 theme customizations can go here. 
          */
-        public static final int AppBaseTheme=0x7f050000;
+        public static final int AppBaseTheme=0x7f060000;
         /**  Application theme. 
  All customizations that are NOT specific to a particular API-level can go here. 
          */
-        public static final int AppTheme=0x7f050001;
+        public static final int AppTheme=0x7f060001;
     }
 }

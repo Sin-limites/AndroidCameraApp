@@ -5,9 +5,18 @@
     <string name="start_service">Start service</string>
     <string name="stop_service">Stop service</string>
     
+    <!-- Toast Messages -->
 	<string name="service_started">The service has been started</string>
 	<string name="service_stopped">The service has been stopped</string>
-	
 	<string name="service_already_stopped">Service has already been stopped</string>
 	<string name="service_already_started">Service has already been started</string>
+	<string name="no_loading_type">No loading type has been set</string>
+	
+	<!-- Menu strings -->
+	<string name="loading_type_header">Loading type: </string>
+	<string name="transit">In transit</string>
+	<string name="unload">Unload</string>
+	
+	<!-- Content Description -->
+	<string name="binarized_image">Binarized image</string>
 </resources>

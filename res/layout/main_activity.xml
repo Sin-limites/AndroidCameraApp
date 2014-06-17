@@ -3,14 +3,40 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
+    <SurfaceView
+        android:id="@+id/camera_view"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_above="@+id/loading_type_header"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true" />
+
+    <RelativeLayout
+        android:id="@+id/binarized_imageview_background"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:background="@color/dark_yellow" >
+
+        <ImageView
+            android:id="@+id/binarized_imageview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:contentDescription="@string/binarized_image" />
+    </RelativeLayout>
+
     <Button
         android:id="@+id/stop_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_marginBottom="18dp"
-        android:layout_marginRight="20dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginRight="31dp"
         android:onClick="StopService"
         android:text="@string/stop_service" />
 
@@ -20,18 +46,29 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/stop_button"
         android:layout_alignBottom="@+id/stop_button"
-        android:layout_alignParentLeft="true"
-        android:layout_marginLeft="24dp"
+        android:layout_marginRight="14dp"
+        android:layout_toLeftOf="@+id/stop_button"
         android:onClick="StartService"
         android:text="@string/start_service" />
 
-    <SurfaceView
-        android:id="@+id/camera_view"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:layout_marginTop="10dp"
+    <TextView
+        android:id="@+id/loading_type_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/start_button"
+        android:layout_alignLeft="@+id/start_button"
+        android:text="@string/loading_type_header"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/loading_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_above="@+id/stop_button"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignRight="@+id/stop_button"
+        android:layout_toRightOf="@+id/loading_type_header"
+        android:layout_marginLeft="5dp"
+        android:textStyle="bold"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </RelativeLayout>

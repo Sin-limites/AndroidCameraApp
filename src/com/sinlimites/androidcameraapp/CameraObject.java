@@ -5,6 +5,7 @@ import android.hardware.Camera;
 public class CameraObject {
 	
 	private static Camera camera;
+	private static boolean serviceRunning;
 
 	/**
 	 * Getter for the Camera
@@ -20,5 +21,19 @@ public class CameraObject {
 	 */
 	public static void setCamera(Camera camera) {
 		CameraObject.camera = camera;
+	}
+
+	/**
+	 * @return the serviceRunning
+	 */
+	public static boolean isServiceRunning() {
+		return serviceRunning;
+	}
+
+	/**
+	 * @param serviceRunning the serviceRunning to set
+	 */
+	public static void setServiceRunning(boolean serviceRunning) {
+		CameraObject.serviceRunning = serviceRunning;
 	}
 }
