@@ -49,7 +49,7 @@ public class MainService extends Service {
 	private Bitmap originalImage, binarizedImage;
 	private boolean finished = true;
 	private ImageView imageView;
-	private static String lastContainerCode;
+	private static String lastContainerCode = "";
 	private double longitude, latitude;
 	private static ArrayList<Handling> handlingArrayList = new ArrayList<Handling>();
 
@@ -68,8 +68,7 @@ public class MainService extends Service {
 			longitude = 0;
 			gps.showSettingsAlert();
 		}	
-		//String json = BuildObject(latitude, longitude);
-		//new JSONUpdateAsync("PBAU3216620", json).execute();
+		UpdateDatabase(lastContainerCode, true);
 		Toast.makeText(this, R.string.service_stopped, Toast.LENGTH_LONG).show();
 		CameraObject.setServiceRunning(false);
 	}
@@ -152,7 +151,9 @@ public class MainService extends Service {
 				ChangeImageView(binarizedImage);
 
 				String code = processTesseract(binarizedImage);
+				System.out.println("Scanned code:"+code);
 				code = CheckForContainerCode(code);
+				System.out.println("Scanned code after Regex:"+code);
 
 				CheckDifferentCode(code);
 			}
@@ -162,9 +163,11 @@ public class MainService extends Service {
 
 	private void CheckDifferentCode(String code) {
 		if(!code.equals(lastContainerCode) && !code.equals("")){
-			if(!lastContainerCode.equals(""))
+			if(!lastContainerCode.equals("")){
+				System.out.println("Container code is different! Old code: "+lastContainerCode+" | New code: "+code);
 				UpdateDatabase(code, true);
-			
+			}
+			System.out.println("Update database with code: "+code);
 			UpdateDatabase(code, false);
 			lastContainerCode = code;
 		}
@@ -176,12 +179,14 @@ public class MainService extends Service {
 			gps.getLocation();
 			latitude = gps.getLatitude();
 			longitude = gps.getLongitude();
+			System.out.println("GPS retreived! Longitude: "+longitude+" | Latitude: "+latitude);
 		} else {
 			latitude = 0;
 			longitude = 0;
 			gps.showSettingsAlert();
 		}		
 		String json = BuildObject(latitude, longitude, loadingTypeDone);
+		System.out.println("Json builded: "+json);
 		if(!json.equals(""))
 			new JSONUpdateAsync(code, json).execute();
 	}
@@ -205,8 +210,7 @@ public class MainService extends Service {
 	            				&& handlingList.getHandlingName().equals(MyApplication.getActivity().getResources().getString(R.string.discharge))){
 	            			handling = handlingList;
 	            		}
-	            	} else
-	            		Toast.makeText(this, R.string.no_handling_found, Toast.LENGTH_LONG).show();
+	            	}
 	            }
 	            container.setHandlingID(handling);
 	            location.setEquipmentNumber(container);
