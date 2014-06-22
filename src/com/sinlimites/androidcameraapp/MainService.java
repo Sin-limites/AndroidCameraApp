@@ -239,7 +239,7 @@ public class MainService extends Service {
 
 	private String CheckForContainerCode(String code) {
 		code = code.replaceAll(" ", "");
-		Pattern regex = Pattern.compile("(^[a-zA-Z]{4})([0-9]{7})");
+		Pattern regex = Pattern.compile("([a-zA-Z]{4})([0-9]{7})");
 		Matcher matcher = regex.matcher(code);
 		if(matcher.find())
 			return matcher.group();
