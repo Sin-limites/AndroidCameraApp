@@ -36,7 +36,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_marginBottom="10dp"
-        android:layout_marginRight="31dp"
+        android:layout_marginRight="10dp"
         android:onClick="StopService"
         android:text="@string/stop_service" />
 
@@ -46,8 +46,7 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/stop_button"
         android:layout_alignBottom="@+id/stop_button"
-        android:layout_marginRight="14dp"
-        android:layout_toLeftOf="@+id/stop_button"
+        android:layout_marginLeft="10dp"
         android:onClick="StartService"
         android:text="@string/start_service" />
 
@@ -66,9 +65,9 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/stop_button"
         android:layout_alignRight="@+id/stop_button"
-        android:layout_toRightOf="@+id/loading_type_header"
         android:layout_marginLeft="5dp"
-        android:textStyle="bold"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:layout_toRightOf="@+id/loading_type_header"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textStyle="bold" />
 
 </RelativeLayout>

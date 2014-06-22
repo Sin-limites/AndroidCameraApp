@@ -20,11 +20,11 @@ public final class R {
         public static final int binarized_imageview=0x7f080003;
         public static final int binarized_imageview_background=0x7f080002;
         public static final int camera_view=0x7f080000;
+        public static final int load=0x7f080007;
         public static final int loading_type=0x7f080006;
         public static final int loading_type_header=0x7f080001;
         public static final int start_button=0x7f080005;
         public static final int stop_button=0x7f080004;
-        public static final int transit=0x7f080007;
         public static final int unload=0x7f080008;
     }
     public static final class layout {
@@ -37,21 +37,40 @@ public final class R {
         public static final int app_name=0x7f050000;
         /**  Content Description 
          */
-        public static final int binarized_image=0x7f05000b;
+        public static final int binarized_image=0x7f05000e;
+        public static final int camera_never_started=0x7f050005;
+        public static final int connecting_to_server=0x7f050019;
+        public static final int discharge=0x7f05000d;
+        public static final int gps_disabled=0x7f050010;
+        /**  GPS Strings 
+         */
+        public static final int gps_settings=0x7f05000f;
+        public static final int http_409=0x7f050014;
+        /**  HTTP messages 
+         */
+        public static final int http_500=0x7f050013;
+        public static final int http_all=0x7f050015;
+        public static final int http_failed_connect=0x7f050016;
+        public static final int http_get_success=0x7f050018;
+        public static final int http_updated_success=0x7f050017;
+        public static final int load=0x7f05000c;
         /**  Menu strings 
          */
-        public static final int loading_type_header=0x7f050008;
-        public static final int no_loading_type=0x7f050007;
-        public static final int service_already_started=0x7f050006;
-        public static final int service_already_stopped=0x7f050005;
+        public static final int loading_type_header=0x7f050009;
+        public static final int no=0x7f050012;
+        public static final int no_handling_found=0x7f05001a;
+        public static final int no_loading_type=0x7f050008;
+        public static final int service_already_started=0x7f050007;
+        public static final int service_already_stopped=0x7f050006;
         /**  Toast Messages 
          */
         public static final int service_started=0x7f050003;
         public static final int service_stopped=0x7f050004;
+        public static final int settings=0x7f050011;
         public static final int start_service=0x7f050001;
         public static final int stop_service=0x7f050002;
-        public static final int transit=0x7f050009;
-        public static final int unload=0x7f05000a;
+        public static final int transit=0x7f05000a;
+        public static final int unload=0x7f05000b;
     }
     public static final class style {
         /** 

@@ -7,6 +7,7 @@ import java.util.List;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
 import android.os.Build;
@@ -27,9 +28,10 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback, Se
 	private Camera camera;
 	private SurfaceView surfaceView;
 	private SurfaceHolder surfaceHolder;
-	private final String tag = "VideoServer";
 	public static final int ROTATE_ANGLE = 90;
 	private TextView loadingType;
+	private boolean cameraStarted = false, fromCameraService = false;
+	private String loadingTypeText;
 
 	/**
 	 * Show the main_activity.xml layout and place an SurefaceView.
@@ -40,7 +42,7 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback, Se
 		MyApplication.setActivity(this);
 		setContentView(R.layout.main_activity);
 		loadingType = (TextView) findViewById(R.id.loading_type);
-		
+
 		HandleSurfaceView();
 	}
 
@@ -56,16 +58,39 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback, Se
 		surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 	}
 
+	@Override
+	public void onResume() {
+	    if(cameraStarted)
+			surfaceView.setBackgroundColor(Color.TRANSPARENT);
+	    else 
+			surfaceView.setBackgroundColor(Color.BLACK);
+	    
+	    loadingType.setText(loadingTypeText);
+	    super.onResume();
+	}
+	
+	@Override
+	public void onPause() {
+		loadingTypeText = loadingType.getText().toString();
+		super.onPause();
+	}
+	
+	@Override
+	public void onBackPressed() {}
+	
 	/**
 	 * Start the camera. Called when clicked on the "Start Service" button.
 	 * 
 	 * @param v
 	 */
 	public void StartService(View v) {
-		if(!loadingType.getText().equals(""))
+		if (!loadingType.getText().equals("")) {
 			StartCamera();
-		else {
+			cameraStarted = true;
+			surfaceView.setBackgroundColor(Color.TRANSPARENT);
+		} else {
 			Toast.makeText(this, R.string.no_loading_type, Toast.LENGTH_SHORT).show();
+			fromCameraService = true;
 			openOptionsMenu();
 		}
 	}
@@ -77,6 +102,8 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback, Se
 	 */
 	public void StopService(View v) {
 		StopCamera();
+		cameraStarted = false;
+		surfaceView.setBackgroundColor(Color.BLACK);
 	}
 
 	/**
@@ -85,17 +112,16 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback, Se
 	 */
 	private void StartCamera() {
 		try {
-			camera = getCamera();
+			camera = CameraObject.getCamera();
 
 			try {
 				Parameters parameters = camera.getParameters();
 				parameters = ChangeRotationBasedOnSDK(parameters);
 				camera.setParameters(parameters);
-
 				camera.setPreviewDisplay(surfaceHolder);
 				camera.startPreview();
 			} catch (Exception e) {
-				Log.e(tag, "init_camera: " + e);
+				e.printStackTrace();
 			}
 			CameraObject.setCamera(camera);
 			startService(new Intent(MainActivity.this, MainService.class));
@@ -118,11 +144,17 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback, Se
 			CameraObject.setCamera(camera);
 			stopService(new Intent(MainActivity.this, MainService.class));
 		} catch (RuntimeException e) {
-			if (e.getMessage().equals("Method called after release()"))
-				Toast.makeText(this, R.string.service_already_stopped, Toast.LENGTH_SHORT).show();
+			if (e.getCause() != null){
+				if (e.getMessage().equals("Method called after release()")){
+					Toast.makeText(this, R.string.service_already_stopped, Toast.LENGTH_SHORT).show();
+				}
+			}
+			else {
+				Toast.makeText(this, R.string.camera_never_started, Toast.LENGTH_SHORT).show();
+			}
 
 			e.printStackTrace();
-		}
+		} 
 	}
 
 	/**
@@ -191,15 +223,15 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback, Se
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		if(!CameraObject.isServiceRunning())
+		if (!CameraObject.isServiceRunning())
 			getMenuInflater().inflate(R.menu.main_menu, menu);
 		return true;
 	}
 
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.transit:
-			Toast.makeText(this, R.string.transit, Toast.LENGTH_SHORT).show();
+		case R.id.load:
+			Toast.makeText(this, R.string.load, Toast.LENGTH_SHORT).show();
 			break;
 		case R.id.unload:
 			Toast.makeText(this, R.string.unload, Toast.LENGTH_SHORT).show();
@@ -209,23 +241,35 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback, Se
 		}
 		TextView loadingType = (TextView) findViewById(R.id.loading_type);
 		loadingType.setText(item.getTitle());
+		if (fromCameraService)
+			StartService(null);
+		
 		return true;
 	}
 
 	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 		try {
-			Camera.Parameters parameters = camera.getParameters();
-			Camera.Size bestSize = getBestPreviewSize(width, height, parameters);
+			if (camera != null) {
+				Camera.Parameters parameters = camera.getParameters();
+				Camera.Size bestSize = getBestPreviewSize(width, height, parameters);
 
-			if (bestSize != null) {
-				parameters.setPreviewSize(bestSize.width, bestSize.height);
+				if (bestSize != null) {
+					parameters.setPreviewSize(bestSize.width, bestSize.height);
+					parameters = ChangeRotationBasedOnSDK(parameters);
+					camera.setParameters(parameters);
+					camera.setPreviewDisplay(surfaceHolder);
+					camera.startPreview();
+				}
+			} else {
+				camera = getCamera();
+				Parameters parameters = camera.getParameters();
 				parameters = ChangeRotationBasedOnSDK(parameters);
 				camera.setParameters(parameters);
+				camera.setPreviewDisplay(surfaceHolder);
 				camera.startPreview();
-
-				Toast.makeText(getApplicationContext(), "Best Size:\n" + String.valueOf(bestSize.width) + " : " + String.valueOf(bestSize.height), Toast.LENGTH_LONG).show();
 			}
+			CameraObject.setCamera(camera);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -233,10 +277,8 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback, Se
 	}
 
 	@Override
-	public void surfaceCreated(SurfaceHolder arg0) {
-	}
+	public void surfaceCreated(SurfaceHolder arg0) {}
 
 	@Override
-	public void surfaceDestroyed(SurfaceHolder arg0) {
-	}
+	public void surfaceDestroyed(SurfaceHolder arg0) {}
 }
