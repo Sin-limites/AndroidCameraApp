@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import com.sinlimites.objects.CameraObject;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -58,6 +60,9 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback, Se
 		surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 	}
 
+	/**
+	 * Set the surfaceView if the camerea is started else make it black.
+	 */
 	@Override
 	public void onResume() {
 	    if(cameraStarted)
@@ -69,12 +74,18 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback, Se
 	    super.onResume();
 	}
 	
+	/**
+	 * Set the variable loadingTypeText with the selected loading type
+	 */
 	@Override
 	public void onPause() {
 		loadingTypeText = loadingType.getText().toString();
 		super.onPause();
 	}
 	
+	/**
+	 * No action when the user clicks on the back button
+	 */
 	@Override
 	public void onBackPressed() {}
 	
@@ -173,6 +184,11 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback, Se
 		}
 	}
 
+	/**
+	 * Set the display orientation of the camera based on the orientation of the phone
+	 * @param parameters
+	 * @return
+	 */
 	private Parameters ChangeRotationBasedOnSDK(Parameters parameters) {
 		if (Build.VERSION.SDK_INT >= 8)
 			setDisplayOrientation(camera, ROTATE_ANGLE);
@@ -206,6 +222,13 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback, Se
 		}
 	}
 
+	/**
+	 * Get the best preview size for the camera preview
+	 * @param width
+	 * @param height
+	 * @param parameters
+	 * @return
+	 */
 	private Camera.Size getBestPreviewSize(int width, int height, Camera.Parameters parameters) {
 		Camera.Size bestSize = null;
 		List<Camera.Size> sizeList = parameters.getSupportedPreviewSizes();
@@ -221,6 +244,9 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback, Se
 		return bestSize;
 	}
 
+	/**
+	 * Create the option menu when the user doesn't have any loading type selected.
+	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		if (!CameraObject.isServiceRunning())
@@ -228,6 +254,9 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback, Se
 		return true;
 	}
 
+	/**
+	 * Handler to handle the option buttons. Set the text so the user knows which loading is selected.
+	 */
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.load:
@@ -247,6 +276,9 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback, Se
 		return true;
 	}
 
+	/**
+	 * Surface changer for the SurfaceView so the camera gets updated.
+	 */
 	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 		try {

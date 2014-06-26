@@ -19,6 +19,7 @@ import android.widget.Toast;
 public class JSONUpdateAsync extends AsyncTask<String, Void, String> {
 
 	private String JsonUrl = "http://145.24.222.137:8080/Rebuild/rest/location/update/";
+	private String code;
 	private String json;
 	private Context context;
 	private String succeeded = "";
@@ -26,12 +27,13 @@ public class JSONUpdateAsync extends AsyncTask<String, Void, String> {
 
 	public JSONUpdateAsync(String code, String json) {
 		this.JsonUrl = this.JsonUrl+code;
+		this.code = code;
 		this.json = json;
 		this.activity = MyApplication.getActivity();
 		this.context = MyApplication.getActivity();
 	}
 
-	/*
+	/**
 	 * Connects to the server and updates with an JSON string.
 	 * 
 	 * @see android.os.AsyncTask#doInBackground(java.lang.Object[])
@@ -66,7 +68,7 @@ public class JSONUpdateAsync extends AsyncTask<String, Void, String> {
 		return "";
 	}
 
-	/*
+	/**
 	 * A simple message to show the user, that its connecting to the server.
 	 * 
 	 * @see android.os.AsyncTask#onPreExecute()
@@ -75,12 +77,13 @@ public class JSONUpdateAsync extends AsyncTask<String, Void, String> {
 		Toast.makeText(context, R.string.connecting_to_server, Toast.LENGTH_SHORT).show();
 	}
 
-	/*
+	/**
 	 * Checks if the JSON is an JSONArray or JSONObject.
 	 * 
 	 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
 	 */
 	protected void onPostExecute(String JsonString) {
 		Toast.makeText(context, succeeded, Toast.LENGTH_SHORT).show();
+		System.out.println("Update: "+succeeded+"|Code:"+code);
 	}
 }

@@ -1,0 +1,41 @@
+<resources>
+
+    <string name="app_name">Shippy Camera App</string>
+
+    <string name="start_service">Start service</string>
+    <string name="stop_service">Stop service</string>
+    
+    <!-- Toast Messages -->
+	<string name="service_started">De service is gestart</string>
+	<string name="service_stopped">De service is gestopt</string>
+	<string name="camera_never_started">Camera is nog niet gestart, start de service eerst.</string>
+	<string name="service_already_stopped">De service is al gestopt</string>
+	<string name="service_already_started">De service is al gestart</string>
+	<string name="no_loading_type">Er is geen laadtype ingevuld</string>
+	
+	<!-- Menu strings -->
+	<string name="loading_type_header">Laad type: </string>
+	<string name="transit">Transit</string>
+	<string name="unload">Unload</string>
+	<string name="load">Load</string>
+	<string name="discharge">Discharge</string>
+	
+	<!-- Content Description -->
+	<string name="binarized_image">Gebinariseerde foto</string>
+	
+	<!-- GPS Strings -->
+	<string name="gps_settings">GPS instellingen</string>
+	<string name="gps_disabled">GPS is uitgeschakeld! Wilt u naar het optie menu navigeren?</string>
+	<string name="settings">Instellingen</string>
+	<string name="no">Nee</string>
+	
+	<!-- HTTP messages -->
+	<string name="http_500">Server error</string>
+	<string name="http_409">De container code is niet bekend</string>
+	<string name="http_all">Er is een onverwachte fout opgetreden, probeer het later nog eens</string>
+	<string name="http_failed_connect">Probleem met het verbinden naar de server</string>
+	<string name="http_updated_success">Container is geupdate</string>
+	<string name="http_get_success">Containers succesvol opgehaald</string>
+	<string name="connecting_to_server">Wachten&#8230; Bezig met verbinden naar de server&#8230;</string>
+	<string name="no_handling_found">Laad type niet gevonden, probeer het later nog een keer</string>
+</resources>

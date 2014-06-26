@@ -38,7 +38,7 @@ public class JSONGetAsync extends AsyncTask<String, Void, String> {
 		this.activity = MyApplication.getActivity();
 		this.context = MyApplication.getActivity();
 	}
-	/*
+	/**
 	 * Connects to the server and gets an JSON string as return type.
 	 * 
 	 * @see android.os.AsyncTask#doInBackground(java.lang.Object[])
@@ -80,16 +80,16 @@ public class JSONGetAsync extends AsyncTask<String, Void, String> {
 		return builder.toString();
 	}
 
-	/*
+	/**
 	 * A simple message to show the user, that its connecting to the server.
 	 * 
 	 * @see android.os.AsyncTask#onPreExecute()
 	 */
 	protected void onPreExecute() {
-		Toast.makeText(context, R.string.connecting_to_server, Toast.LENGTH_SHORT).show();
+		System.out.println("Get: "+activity.getResources().getString(R.string.connecting_to_server));
 	}
 
-	/*
+	/**
 	 * Checks if the JSON is an JSONArray or JSONObject.
 	 * 
 	 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
@@ -117,7 +117,7 @@ public class JSONGetAsync extends AsyncTask<String, Void, String> {
 			Toast.makeText(context, succeeded, Toast.LENGTH_SHORT).show();
 	}
 
-	/*
+	/**
 	 * Iterates through the JSON and sets all the TextViews with the data.
 	 */
 	@SuppressLint("NewApi")

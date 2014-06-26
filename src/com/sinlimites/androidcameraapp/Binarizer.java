@@ -13,6 +13,11 @@ import android.os.Environment;
 
 public class Binarizer {
 
+	/**
+	 * Binarize the image
+	 * @param image
+	 * @return
+	 */
 	public Bitmap BinarizeImage(Bitmap image) {
 	    int width, height, threshold;
 	    height = image.getHeight();
@@ -37,6 +42,11 @@ public class Binarizer {
 	    return imageBinary;
 	}
 
+	/**
+	 * Return a mutable Bitmap so the binarizer can change it's pixels.
+	 * @param image
+	 * @return
+	 */
 	private static Bitmap ConvertToMutable(Bitmap image) {
 		try {
 			File file = new File(Environment.getExternalStorageDirectory() + File.separator + "temp.tmp");

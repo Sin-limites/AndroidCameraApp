@@ -34,6 +34,7 @@ import com.google.gson.GsonBuilder;
 import com.googlecode.leptonica.android.Pix;
 import com.googlecode.leptonica.android.ReadFile;
 import com.googlecode.tesseract.android.TessBaseAPI;
+import com.sinlimites.objects.CameraObject;
 import com.sinlimites.objects.Container;
 import com.sinlimites.objects.ContainerLocation;
 import com.sinlimites.objects.Handling;
@@ -59,7 +60,7 @@ public class MainService extends Service {
 	@Override
 	public void onDestroy() {
 		GPSLocTrack gps = new GPSLocTrack(MyApplication.getActivity());
-		if (gps.canGetLocation()){
+		if (gps.canGetLocation()) {
 			gps.getLocation();
 			latitude = gps.getLatitude();
 			longitude = gps.getLongitude();
@@ -67,7 +68,7 @@ public class MainService extends Service {
 			latitude = 0;
 			longitude = 0;
 			gps.showSettingsAlert();
-		}	
+		}
 		UpdateDatabase(lastContainerCode, true);
 		Toast.makeText(this, R.string.service_stopped, Toast.LENGTH_LONG).show();
 		CameraObject.setServiceRunning(false);
@@ -80,9 +81,9 @@ public class MainService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Toast.makeText(this, R.string.service_started, Toast.LENGTH_LONG).show();
-		if(handlingArrayList.size()==0)
+		if (handlingArrayList.size() == 0)
 			new JSONGetAsync().execute();
-		
+
 		camera = CameraObject.getCamera();
 
 		rawCallback = rawCallBack();
@@ -132,7 +133,7 @@ public class MainService extends Service {
 	}
 
 	/**
-	 * Creates an File containing the taken picture.
+	 * Handle the picture and read the code inside the picture
 	 * 
 	 * @return PictureCallback - return an new PictureCallback.
 	 */
@@ -151,102 +152,134 @@ public class MainService extends Service {
 				ChangeImageView(binarizedImage);
 
 				String code = processTesseract(binarizedImage);
-				System.out.println("Scanned code:"+code);
+				System.out.println("Scanned code:" + code);
 				code = CheckForContainerCode(code);
-				System.out.println("Scanned code after Regex:"+code);
+				System.out.println("Scanned code after Regex:" + code);
 
 				CheckDifferentCode(code);
 			}
 		};
 	}
 
-
+	/**
+	 * Check if the new code is different then the old one. If it is theres a
+	 * new container on the crane so it needs to be updated and the old one also.
+	 * 
+	 * @param code
+	 */
 	private void CheckDifferentCode(String code) {
-		if(!code.equals(lastContainerCode) && !code.equals("")){
-			if(!lastContainerCode.equals("")){
-				System.out.println("Container code is different! Old code: "+lastContainerCode+" | New code: "+code);
+		if (!code.equals(lastContainerCode) && !code.equals("")) {
+			if (!lastContainerCode.equals("")) {
+				System.out.println("Container code is different! Old code: " + lastContainerCode + " | New code: " + code);
 				UpdateDatabase(code, true);
 			}
-			System.out.println("Update database with code: "+code);
+			System.out.println("Update database with code: " + code);
 			UpdateDatabase(code, false);
 			lastContainerCode = code;
 		}
 	}
-	
+
+	/**
+	 * Update the database with the new code
+	 * @param code
+	 * @param loadingTypeDone
+	 */
 	private void UpdateDatabase(String code, boolean loadingTypeDone) {
 		GPSLocTrack gps = new GPSLocTrack(MyApplication.getActivity());
-		if (gps.canGetLocation()){
+		if (gps.canGetLocation()) {
 			gps.getLocation();
 			latitude = gps.getLatitude();
 			longitude = gps.getLongitude();
-			System.out.println("GPS retreived! Longitude: "+longitude+" | Latitude: "+latitude);
+			System.out.println("GPS retreived! Longitude: " + longitude + " | Latitude: " + latitude);
 		} else {
 			latitude = 0;
 			longitude = 0;
 			gps.showSettingsAlert();
-		}		
+		}
 		String json = BuildObject(latitude, longitude, loadingTypeDone);
-		System.out.println("Json builded: "+json);
-		if(!json.equals(""))
+		System.out.println("Json builded: " + json);
+		if (!json.equals(""))
 			new JSONUpdateAsync(code, json).execute();
 	}
-	
+
+	/**
+	 * Build the object so it can be parsed to Json.
+	 * @param latitude
+	 * @param longitude
+	 * @param loadingTypeDone
+	 * @return
+	 */
 	private String BuildObject(double latitude, double longitude, boolean loadingTypeDone) {
 		try {
-			if(handlingArrayList.size()>0) {
+			if (handlingArrayList.size() > 0) {
 				TextView type = (TextView) MyApplication.getActivity().findViewById(R.id.loading_type);
-	            ContainerLocation location = new ContainerLocation();
-	            Container container = new Container();
-	            Handling handling = new Handling();
-	            for(int i=0;i<handlingArrayList.size();i++){
-	            	Handling handlingList = handlingArrayList.get(i);
-	            	if(handlingList.getHandlingName().equals(type.getText().toString()) && !loadingTypeDone)
-	            		handling = handlingList;
-	            	else if (loadingTypeDone){
-	            		if (type.getText().toString().equals(MyApplication.getActivity().getResources().getString(R.string.load)) 
-	            				&& handlingList.getHandlingName().equals(MyApplication.getActivity().getResources().getString(R.string.transit))){
-	            			handling = handlingList;
-	            		} else if (type.getText().toString().equals(MyApplication.getActivity().getResources().getString(R.string.unload))
-	            				&& handlingList.getHandlingName().equals(MyApplication.getActivity().getResources().getString(R.string.discharge))){
-	            			handling = handlingList;
-	            		}
-	            	}
-	            }
-	            container.setHandlingID(handling);
-	            location.setEquipmentNumber(container);
-	            location.setLongitude(longitude);
-	            location.setLatitude(latitude);
-	
-	            LocationDTO dto = new LocationDTO();
-	            dto.setLocationID(location);
-	
-	            return post(dto);
+				ContainerLocation location = new ContainerLocation();
+				Container container = new Container();
+				Handling handling = new Handling();
+				for (int i = 0; i < handlingArrayList.size(); i++) {
+					Handling handlingList = handlingArrayList.get(i);
+					if (handlingList.getHandlingName().equals(type.getText().toString()) && !loadingTypeDone)
+						handling = handlingList;
+					else if (loadingTypeDone) {
+						if (type.getText().toString().equals(MyApplication.getActivity().getResources().getString(R.string.load)) && handlingList.getHandlingName().equals(MyApplication.getActivity().getResources().getString(R.string.transit))) {
+							handling = handlingList;
+						} else if (type.getText().toString().equals(MyApplication.getActivity().getResources().getString(R.string.unload)) && handlingList.getHandlingName().equals(MyApplication.getActivity().getResources().getString(R.string.discharge))) {
+							handling = handlingList;
+						}
+					}
+				}
+				container.setHandlingID(handling);
+				location.setEquipmentNumber(container);
+				location.setLongitude(longitude);
+				location.setLatitude(latitude);
+
+				LocationDTO dto = new LocationDTO();
+				dto.setLocationID(location);
+
+				return post(dto);
 			} else {
 				sleep(1000);
 				BuildObject(latitude, longitude, loadingTypeDone);
 			}
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return "";
-    }
+	}
 
-    public static String post(LocationDTO obj) {
-    	Gson gson = new GsonBuilder().create();
-    	String json = gson.toJson(obj);
+	/**
+	 * Return the Json of the object
+	 * @param obj
+	 * @return
+	 */
+	public static String post(LocationDTO obj) {
+		Gson gson = new GsonBuilder().create();
+		String json = gson.toJson(obj);
 		return json;
 	}
 
+	/**
+	 * Regex and scan the picture for the code.
+	 * @param code
+	 * @return
+	 */
 	private String CheckForContainerCode(String code) {
 		code = code.replaceAll(" ", "");
 		Pattern regex = Pattern.compile("([a-zA-Z]{4})([0-9]{7})");
 		Matcher matcher = regex.matcher(code);
-		if(matcher.find())
+		if (matcher.find())
 			return matcher.group();
-		else 
+		else
 			return "";
 	}
 
+	/**
+	 * Resize the image with the taken picture.
+	 * @param input
+	 * @param width
+	 * @param height
+	 * @return
+	 */
 	private byte[] ResizeImage(byte[] input, int width, int height) {
 		Bitmap original = BitmapFactory.decodeByteArray(input, 0, input.length);
 		Bitmap resized = Bitmap.createScaledBitmap(original, width, height, true);
@@ -261,14 +294,15 @@ public class MainService extends Service {
 	 * Take a picture and write it based on the PictureCallback.
 	 */
 	private void captureImage() {
-		if(camera!=null)
+		if (camera != null)
 			camera.autoFocus(autoFocus());
 	}
 
 	/**
 	 * An sleep function.
 	 * 
-	 * @param time - Time in milliseconds the Thread has to sleep.
+	 * @param time
+	 *            - Time in milliseconds the Thread has to sleep.
 	 */
 	private void sleep(int time) {
 		try {
@@ -303,7 +337,8 @@ public class MainService extends Service {
 	/**
 	 * Create an new Thread and start it.
 	 * 
-	 * @param runnable - the Runnable that needs to be executed on this Thread.
+	 * @param runnable
+	 *            - the Runnable that needs to be executed on this Thread.
 	 */
 	public void performOnBackgroundThread(final Runnable runnable) {
 		final Thread thread = new Thread() {
@@ -320,6 +355,10 @@ public class MainService extends Service {
 		thread.start();
 	}
 
+	/**
+	 * Auto focus method when a picture need to be taken.
+	 * @return
+	 */
 	private AutoFocusCallback autoFocus() {
 		return new AutoFocusCallback() {
 
@@ -331,11 +370,20 @@ public class MainService extends Service {
 		};
 	}
 
+	/**
+	 * Change the ImageView with the binarized image
+	 * @param image
+	 */
 	private void ChangeImageView(Bitmap image) {
 		imageView.setImageBitmap(RotateBitmap(image));
 		finished = true;
 	}
 
+	/**
+	 * Rotate the bitmap with the angle of the device
+	 * @param bitmap
+	 * @return
+	 */
 	private Bitmap RotateBitmap(Bitmap bitmap) {
 		Bitmap image = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
 		Canvas tempCanvas = new Canvas(image);
@@ -345,17 +393,22 @@ public class MainService extends Service {
 		return image;
 	}
 
+	/**
+	 * Return the String Tesseract has found inside the Bitmap
+	 * @param image
+	 * @return
+	 */
 	private String processTesseract(Bitmap image) {
 		String tesseractFolder = Environment.getExternalStorageDirectory() + "/tesseract/tesseract-ocr/";
 		String path = null;
 		if (Environment.getExternalStorageDirectory() != null) {
 			File folder = new File(tesseractFolder + "/tessdata");
-			if(!folder.exists()) {
+			if (!folder.exists()) {
 				try {
 					String assetsFolder[] = getAssets().list("tesseract-ocr");
 					for (int i = 0; i < assetsFolder.length; i++)
 						if (assetsFolder[i].equals("tessdata"))
-							copyFolderToExternalStorage("tesseract-ocr/"+assetsFolder[i]);
+							copyFolderToExternalStorage("tesseract-ocr/" + assetsFolder[i]);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -373,6 +426,10 @@ public class MainService extends Service {
 		return baseApi.getUTF8Text();
 	}
 
+	/**
+	 * Copy the folder to the ExternalStorage. 
+	 * @param name
+	 */
 	private void copyFolderToExternalStorage(String name) {
 		AssetManager assetManager = getAssets();
 		String[] files = null;
@@ -401,13 +458,19 @@ public class MainService extends Service {
 					} catch (IOException e) {
 						Log.e("ERROR", "Failed to copy asset file: " + filename, e);
 					}
-				} 
+				}
 			}
 		} catch (IOException e) {
 			Log.e("ERROR", "Failed to get asset file list.", e);
 		}
 	}
 
+	/**
+	 * Copy a file to the ouput stream
+	 * @param in
+	 * @param out
+	 * @throws IOException
+	 */
 	private void copyFile(InputStream in, OutputStream out) throws IOException {
 		byte[] buffer = new byte[1024];
 		int read;
